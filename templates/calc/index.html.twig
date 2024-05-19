@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello CalcController!{% endblock %}
+
+{% block body %}
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .calculator {
+            max-width: 257px;
+            padding: 20px;
+            margin: 40px auto;
+            border-radius: 10px;
+            border: solid #212121;
+        }
+
+        .calculator .calculator_result {
+            margin-bottom: 12px;
+            padding: 6px;
+            background: #fff;
+            resize: none;
+            pointer-events: none;
+        }
+
+        .calculator_result .tooltip {
+            font-size: 0.7rem;
+            color: gray;
+        }
+
+        .calculator_result .expression {
+            font-size: 0.7rem;
+        }
+
+        .calculator_result .result {
+            margin-top: 6px;
+            font-size: 1.8rem;
+            word-break: break-all;
+        }
+
+        .calculator .calculator_buttons {
+            display: flex;
+        }
+
+        .calculator_buttons .integers {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 8px;
+        }
+
+        .calculator_buttons .operators {
+            margin-left: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .button {
+            font-size: 1.6rem;
+            padding: 8px 14px;
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <div class="calculator">
+            <div class="calculator_result"
+                    {{ (result) ? '' : 'style="padding: 6px"' }}
+            >
+                {% if expression %}
+                    <span class="tooltip">expression:</span>
+                    <p class="expression">{{ expression }}</p>
+                {% endif %}
+
+                <p class="result">{{ result ? result : 'Welcome' }}</p>
+            </div>
+
+            <div class="calculator_buttons">
+                <div class="integers">
+                    {% for integer in integers %}
+                        <button class="button clickable">{{ integer }}</button>
+                    {% endfor %}
+                    <form action="">
+                        <button class="button cancel">C</button>
+                    </form>
+
+                    <form method="GET" action="/calculate">
+                        <input type="hidden" name="expression" id="exp">
+                        <button type="submit" class="button">=</button>
+                    </form>
+                </div>
+                <div class="operators">
+                    {% for operator in operators %}
+                        <button class="button clickable">{{ operator }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            let btns = document.querySelectorAll('.clickable');
+            const result = document.querySelector('.result');
+            const exp = document.getElementById('exp');
+            let expression = '';
+
+            btns.forEach((b) => {
+                b.addEventListener('click', (e) => {
+                    if (e.target.outerText.match(/[-+*/]/)) {
+                        expression += ' ' + e.target.outerText + ' ';
+                    } else {
+                        expression += e.target.outerText;
+                    }
+
+                    result.textContent = expression;
+                    exp.value = expression;
+                })
+            })
+        }())
+    </script>
+{% endblock %}
